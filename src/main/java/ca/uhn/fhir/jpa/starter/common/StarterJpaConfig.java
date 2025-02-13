@@ -43,6 +43,7 @@ import ca.uhn.fhir.jpa.starter.annotations.OnCorsPresent;
 import ca.uhn.fhir.jpa.starter.annotations.OnImplementationGuidesPresent;
 import ca.uhn.fhir.jpa.starter.common.validation.IRepositoryValidationInterceptorFactory;
 import ca.uhn.fhir.jpa.starter.ig.IImplementationGuideOperationProvider;
+import ca.uhn.fhir.jpa.starter.interceptors.CustomDataSource;
 import ca.uhn.fhir.jpa.starter.util.EnvironmentHelper;
 import ca.uhn.fhir.jpa.subscription.util.SubscriptionDebugLogInterceptor;
 import ca.uhn.fhir.jpa.util.ResourceCountCache;
@@ -134,7 +135,7 @@ public class StarterJpaConfig {
 	@Primary
 	@Bean
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-			DataSource myDataSource,
+			CustomDataSource myDataSource,
 			ConfigurableListableBeanFactory myConfigurableListableBeanFactory,
 			FhirContext theFhirContext,
 			JpaStorageSettings theStorageSettings) {
@@ -243,6 +244,17 @@ public class StarterJpaConfig {
 
 		// Create the interceptor and register it
 		return new CorsInterceptor(config);
+	}
+
+	@Bean
+	public CustomDataSource dataSource() {
+		CustomDataSource dataSource = new CustomDataSource();
+		dataSource.setJdbcUrl("jdbc:postgresql://localhost:5500/postgres");
+		dataSource.setUsername("postgres");
+		dataSource.setPassword("mypassword");
+		dataSource.setMaximumPoolSize(10);
+
+		return dataSource;
 	}
 
 	@Bean
